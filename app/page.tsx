@@ -1,46 +1,58 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-import "./../app/app.css";
-import { Amplify } from "aws-amplify";
-import outputs from "@/amplify_outputs.json";
-import "@aws-amplify/ui-react/styles.css";
-import RootLayout from "./layout";
+import { useEffect, useState } from 'react';
+import { CityInfo } from './CityInfo';
 
-Amplify.configure(outputs);
-
-type City = {
-  id: number;
+interface City {
+  id: string;
   name: string;
-  discription: string;
   country: string;
-  population: number;
-  image: string;
-  isCapital: boolean;
+  region: string;
+  description?: string;
 }
 
-type Country = {
-  id: number;
-  name: string;
-  discription: string;
-  capital: City;
-  population: number;
-  image: string;
-}
+export default function CityPage() {
+  const [cities, setCities] = useState<City[]>([]);
+  const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [wishlist, setWishlist] = useState<City[]>([]);
 
-export default function App() {
+  useEffect(() => {
+    const fetchCities = async () => {
+        const res = await fetch(
+          'https://wft-geo-db.p.rapidapi.com/v1/geo/cities?limit=10&sort=-population',
+          {
+            headers: {
+              'X-RapidAPI-Key': '6f6817ae24msh176a909ecca6f43p1c1850jsn5ca2783844c1',
+              'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com',
+            },
+          }
+        );
+        const json = await res.json();
+        const data = json.data.map((city: any) => ({
+          id: city.id,
+          name: city.name,
+          country: city.country,
+          region: city.region,
+        }));
+        setCities(data);
+    };
 
-  
-  
+    fetchCities();
+  }, []);
 
   return (
-    <main>
-      
-      
-      
-      
-    </main>
+    <div>
+      <h1>Best Cities to Visit</h1>
+      <div>
+        {cities.map((city) => (
+          <div key={city.id} onClick={() => setSelectedCity(city)}>
+            <h2>{city.name}</h2>
+            <p>{city.region}, {city.country}</p>
+            <button onClick={}>View City</button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
+
