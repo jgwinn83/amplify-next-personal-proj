@@ -17,7 +17,7 @@ export default function RootLayout({
           </div>
         </nav>
 
-        <main className="flex-1 p-4">
+        <main className="flex-1 p-4 max-w-7xl mx-auto w-full">
           {children}
         </main>
       </body>
